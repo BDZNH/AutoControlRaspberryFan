@@ -5,14 +5,15 @@
 #include <softPwm.h>
 #define TEMP_PATH "/sys/class/thermal/thermal_zone0/temp"
 #define _FANPIN 8
-#define MAX_SIZE 32
 using namespace std;
 
 float GetCpuTempure();
 int initWiringPi();
+void showInfo();
 
 int main()
 {
+    showInfo();
     float temp=0;
     bool Fan_is_open=false;
     if (initWiringPi() < 0)
@@ -22,7 +23,7 @@ int main()
     while(true)
     {
         temp = GetCpuTempure();
-        cout << "Cpu tempure is : " <<temp << flush << "°C \r";
+        cout << "       Cpu tempure is : " <<temp << flush << "°C \r";
         if(Fan_is_open)
         {
             if(temp < 40.0)
@@ -74,4 +75,18 @@ int initWiringPi()
         return -2;
     }
     return 0;
+}
+
+
+void showInfo()
+{
+    cout<<"-------------------------------------------------------------------------------"<<endl;
+    cout<<"        Project Name : AutoControlRaspberryfan"<<endl;
+    cout<<"        Author       : BDZNH"<<endl;
+    cout<<"        Project URL  : https://github.com/BDZNH/AutoControlRaspberryFan"<<endl;
+    cout<<"        what is this : Auto control raspberry fan with 5V. Turn the fan"<<endl;
+    cout<<"                       when the tempreture is high than 45°C, turn off "<<endl;
+    cout<<"                       fan when the CPU tempreture is lower than 40°C."<<endl;
+    cout<<"-------------------------------------------------------------------------------"<<endl;
+    cout<<"\n\n\n"<<endl;
 }
