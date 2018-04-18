@@ -23,7 +23,7 @@ int main()
     while(true)
     {
         temp = GetCpuTempure();
-        cout << "       Cpu tempure is : " <<temp << flush << "°C \r";
+        cout << "        Cpu tempreture is : " <<temp << flush << "°C \r";
         if(Fan_is_open)
         {
             if(temp < 40.0)
