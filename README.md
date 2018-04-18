@@ -6,4 +6,5 @@ compile with g++.
 ```bash
 g++ main.cpp -lwiringPi -lpthread
 ```
-
+## GPIO
+![引脚定义](rpi-pins-40-0.png)
