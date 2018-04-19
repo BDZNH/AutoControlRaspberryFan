@@ -7,86 +7,86 @@
 #define _FANPIN 8
 using namespace std;
 
-float GetCpuTempure();
+double GetCpuTempera();
 int initWiringPi();
 void showInfo();
 
 int main()
 {
-    showInfo();
-    float temp=0;
-    bool Fan_is_open=false;
-    if (initWiringPi() < 0)
-    {
-        return -1;
-    }
-    while(true)
-    {
-        temp = GetCpuTempera();
-        cout << "        Cpu temperature is : " <<temp << flush << "Â°C \r";
-        if(Fan_is_open)
-        {
-            if(temp < 40.0)
-            {
-                Fan_is_open=false;
-                softPwmWrite(_FANPIN, 0);
-                continue;
-            }
-        }
-        else
-        {
-            if(temp > 45.0)
-            {
-                Fan_is_open=true;
-                softPwmWrite(_FANPIN, 100);
-            }
-        }
-        sleep(1);
-    }
-    return 0;
+	showInfo();
+	double temp = 0;
+	bool Fan_is_open = false;
+	if (initWiringPi() < 0)
+	{
+		return -1;
+	}
+	while (true)
+	{
+		temp = GetCpuTempera();
+		cout << "        Cpu temperature is : " << temp << flush << "¡ãC \r";
+		if (Fan_is_open)
+		{
+			if (temp < 40.0)
+			{
+				Fan_is_open = false;
+				softPwmWrite(_FANPIN, 0);
+				continue;
+			}
+		}
+		else
+		{
+			if (temp > 45.0)
+			{
+				Fan_is_open = true;
+				softPwmWrite(_FANPIN, 100);
+			}
+		}
+		sleep(1);
+	}
+	return 0;
 }
 
-float GetCpuTempera()
+double GetCpuTempera()
 {
-    ifstream fin(TEMP_PATH,ios_base::in);
-    if(!fin.is_open())
-    {
-        cout<<"Cant open file: "<<TEMP_PATH<<endl;
-        return -1;
-    }
-    int temp;
-    fin >> temp;
-    float tem=temp/1000.0;
-    fin.clear();
-    fin.seekg(0,ios::beg);
-    return tem;
+	ifstream fin(TEMP_PATH, ios_base::in);
+	if (!fin.is_open())
+	{
+		cout << "Cant open file: " << TEMP_PATH << endl;
+		return -1;
+	}
+	int temp;
+	fin >> temp;
+	double tem = temp / 1000.0;
+	fin.clear();
+	fin.seekg(0, ios::beg);
+	return tem;
 }
 
 int initWiringPi()
 {
-    if (wiringPiSetup() != 0)
-    {
-	cout << "WiringPi setup failed" << flush << " \r";
-        return -1;
-    }
-    if (softPwmCreate(_FANPIN, 0, 100) != 0)
-    {
-	cout << "WiringPi setup failed" << flush << " \r";
-        return -2;
-    }
-    return 0;
+	if (wiringPiSetup() != 0)
+	{
+		cout << "WiringPi setup failed" << flush << " \r";
+		return -1;
+	}
+	if (softPwmCreate(_FANPIN, 0, 100) != 0)
+	{
+		cout << "WiringPi setup failed" << flush << " \r";
+		return -2;
+	}
+	return 0;
 }
 
 
 void showInfo()
 {
-    cout<<"-------------------------------------------------------------------------------"<<endl;
-    cout<<"        Project Name : AutoControlRaspberryfan"<<endl;
-    cout<<"        Author       : BDZNH"<<endl;
-    cout<<"        Project URL  : https://github.com/BDZNH/AutoControlRaspberryFan"<<endl;
-    cout<<"        what is this : Auto control raspberry fan with 5V. Turn the fan"<<endl;
-    cout<<"                       when the temperaure is high than 45Â°C, turn off "<<endl;
-    cout<<"                       fan when the CPU temperature is lower than 40Â°C."<<endl;
-    cout<<"-------------------------------------------------------------------------------"<<endl;
-    cout<<"\n\n\n"<<endl;
+	cout << "-------------------------------------------------------------------------------" << endl;
+	cout << "        Project Name : AutoControlRaspberryfan" << endl;
+	cout << "        Author       : BDZNH" << endl;
+	cout << "        Project URL  : https://github.com/BDZNH/AutoControlRaspberryFan" << endl;
+	cout << "        what is this : Auto control raspberry fan with 5V. Turn the fan" << endl;
+	cout << "                       when the temperaure is high than 45¡ãC, turn off " << endl;
+	cout << "                       fan when the CPU temperature is lower than 40¡ãC." << endl;
+	cout << "-------------------------------------------------------------------------------" << endl;
+	cout << "\n\n\n" << endl;
 }
