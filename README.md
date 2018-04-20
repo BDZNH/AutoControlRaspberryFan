@@ -1,6 +1,6 @@
 # AutoControlRaspberryFan
 ## Usage
-Auto control raspberry fan with 5V. Turn the fan when the tempreture is high than 45°C, turn off fan when the CPU tempreture is lower than 40°C.
+Auto control raspberry fan with 5V. Turn the fan when the tempreture is higher than 45°C, turn off fan when the CPU tempreture is lower than 39°C.
 AutoControlRaspberry depends on wiringPi.
 ## install
 
