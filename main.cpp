@@ -23,18 +23,45 @@ int main()
 	while (true)
 	{
 		temp = GetCpuTempera();
-		cout << "        Cpu temperature is : " << temp << flush << "°C \r";
+		//cout << "        Cpu temperature is : " << temp << flush << "\r";
+		if (temp >= 42 )
+			cout << "Cpu temperature is : \033[0;31m" <<temp << flush << "°C                                           \033[0m\r";
+			//showtemp(temp);
+		else
+			//showtemp(temp);
+			cout << "Cpu temperature is : \033[1;32m" <<temp << flush << "°C                                           \033[0m\r";
 		if (Fan_is_open)
 		{
-			if (temp < 40.0)
+			if (temp < 30.0)
 			{
 				Fan_is_open = false;
 				softPwmWrite(_FANPIN, 0);
 				continue;
 			}
+			sleep(10);
 		}
 		else
-		{
+		{	
+			if (temp >40 && temp < 41)
+			{
+				Fan_is_open = true;
+				softPwmWrite(_FANPIN, 60);
+			}
+			if (temp >=41 && temp < 42)
+			{
+				Fan_is_open = true;
+				softPwmWrite(_FANPIN, 70);
+			}
+			if (temp >=42 && temp < 43)
+			{
+				Fan_is_open = true;
+				softPwmWrite(_FANPIN, 80);
+			}
+			if (temp >=44 && temp < 45)
+			{
+				Fan_is_open = true;
+				softPwmWrite(_FANPIN, 90);
+			}
 			if (temp > 45.0)
 			{
 				Fan_is_open = true;
@@ -85,8 +112,8 @@ void showInfo()
 	cout << "        Author       : BDZNH" << endl;
 	cout << "        Project URL  : https://github.com/BDZNH/AutoControlRaspberryFan" << endl;
 	cout << "        what is this : Auto control raspberry fan with 5V. Turn the fan" << endl;
-	cout << "                       when the temperaure is high than 45°C, turn off " << endl;
-	cout << "                       fan when the CPU temperature is lower than 40°C." << endl;
+	cout << "                       when the temperaure is high than 45¿, turn off " << endl;
+	cout << "                       fan when the CPU temperature is lower than 40¿." << endl;
 	cout << "-------------------------------------------------------------------------------" << endl;
 	cout << "\n\n\n" << endl;
 }
