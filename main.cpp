@@ -23,16 +23,13 @@ int main()
 	while (true)
 	{
 		temp = GetCpuTempera();
-		//cout << "        Cpu temperature is : " << temp << flush << "\r";
 		if (temp >= 42 )
 			cout << "Cpu temperature is : \033[0;31m" <<temp << flush << "°C                                           \033[0m\r";
-			//showtemp(temp);
 		else
-			//showtemp(temp);
 			cout << "Cpu temperature is : \033[1;32m" <<temp << flush << "°C                                           \033[0m\r";
 		if (Fan_is_open)
 		{
-			if (temp < 30.0)
+			if (temp < 39.0)
 			{
 				Fan_is_open = false;
 				softPwmWrite(_FANPIN, 0);
@@ -66,6 +63,7 @@ int main()
 			{
 				Fan_is_open = true;
 				softPwmWrite(_FANPIN, 100);
+				sleep(60);
 			}
 		}
 		sleep(1);

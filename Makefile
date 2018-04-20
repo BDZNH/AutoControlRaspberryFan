@@ -2,18 +2,23 @@
 #HEADER_PATH = -I/usr/local/include/
 #CCFLAG="-Wall -fexceptions -g -std=c++11 -lwiringPi -lpthread -DNDEBUG"
 AutoStart_Script=AutoControlFan
-#showtempera: showtempera.o main.o
-#	g++ $(CCFLAG) -oshowtempera showtempera.o
+all: autocontrolfan showtemperature
+
+showtemperature : showtemperature.o 
+	g++ $(CCFLAG) -o showtemperature.out showtemperature.o
+showtemperature.o : showtemperature.cpp
+	g++ -Wall -fexceptions -g -std=c++11 -lpthread -DNDEBUG -c showtemperature.cpp
 autocontrolfan : main.o
-	g++ -o autocontrolfan main.o -lwiringPi -lpthread $(HEADER_PATH)
+	g++ -o autocontrolfan.out main.o -lwiringPi -lpthread $(HEADER_PATH)
 main.o : main.cpp
 	g++ -Wall -fexceptions -g -std=c++11 -lwiringPi -lpthread -DNDEBUG -c main.cpp  $(HEADER_PATH)
 clean :
 	rm -f *.o
-	rm autocontrolfan
+	rm *.out
 install :
 	service ${AutoStart_Script} stop
-	cp autocontrolfan /usr/bin/
+	cp autocontrolfan.out /usr/bin/autocontrolfan 
+	cp showtemperature.out /usr/bin/showptp
 	cp AutoControlFan /etc/init.d/
 	chmod +x /etc/init.d/${AutoStart_Script}
 	update-rc.d ${AutoStart_Script} defaults

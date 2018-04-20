@@ -17,4 +17,4 @@ cd AutoControlRaspberryFan
 make uninstall
 ```
 ## GPIO
-[![引脚定义](rpi-pins-40-0.png)](http://shumeipai.nxez.com/raspberry-pi-pins-version-40)
+[![引脚定义](http://shumeipai.nxez.com/wp-content/uploads/2015/03/rpi-pins-40-0.png)](http://shumeipai.nxez.com/raspberry-pi-pins-version-40)
