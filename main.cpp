@@ -24,16 +24,16 @@ int main()
 	{
 		temp = GetCpuTempera();
 		if (temp >= 42 )
-			cout << "Cpu temperature is : \033[0;31m" <<temp << flush << "°C                                           \033[0m\r";
+			cout << "Cpu temperature is : \033[0;31m" <<temp << flush << "°C \033[0m";
 		else
-			cout << "Cpu temperature is : \033[1;32m" <<temp << flush << "°C                                           \033[0m\r";
+			cout << "Cpu temperature is : \033[1;32m" <<temp << flush << "°C \033[0m";
 		if (Fan_is_open)
 		{
 			if (temp < 39.0)
 			{
 				Fan_is_open = false;
+				sleep(10);
 				softPwmWrite(_FANPIN, 0);
-				continue;
 			}
 			sleep(10);
 		}
@@ -43,30 +43,40 @@ int main()
 			{
 				Fan_is_open = true;
 				softPwmWrite(_FANPIN, 60);
+				cout << "set fan speed 60"<<flush;
+				sleep(5);
 			}
 			if (temp >=41 && temp < 42)
 			{
 				Fan_is_open = true;
 				softPwmWrite(_FANPIN, 70);
+				cout << "set fan speed 70"<<flush;
+				sleep(5);
 			}
 			if (temp >=42 && temp < 43)
 			{
 				Fan_is_open = true;
 				softPwmWrite(_FANPIN, 80);
+				cout << "set fan speed 80"<<flush;
+				sleep(5);
 			}
 			if (temp >=44 && temp < 45)
 			{
 				Fan_is_open = true;
 				softPwmWrite(_FANPIN, 90);
+				cout << "set fan speed 90"<<flush;
+				sleep(5);
 			}
 			if (temp > 45.0)
 			{
 				Fan_is_open = true;
 				softPwmWrite(_FANPIN, 100);
+				cout << "set fan speed 100"<<flush;
 				sleep(60);
 			}
 		}
 		sleep(1);
+		cout<<"\r";
 	}
 	return 0;
 }
@@ -110,8 +120,8 @@ void showInfo()
 	cout << "        Author       : BDZNH" << endl;
 	cout << "        Project URL  : https://github.com/BDZNH/AutoControlRaspberryFan" << endl;
 	cout << "        what is this : Auto control raspberry fan with 5V. Turn the fan" << endl;
-	cout << "                       when the temperaure is high than 45¿, turn off " << endl;
-	cout << "                       fan when the CPU temperature is lower than 40¿." << endl;
+	cout << "                       when the temperaure is high than 45°C, turn off " << endl;
+	cout << "                       fan when the CPU temperature is lower than 40°C." << endl;
 	cout << "-------------------------------------------------------------------------------" << endl;
 	cout << "\n\n\n" << endl;
 }
