@@ -27,7 +27,6 @@ int main()
 			cout << "Cpu temperature is : \033[0;31m" <<temp << flush << "°C \033[0m";
 		else
 			cout << "Cpu temperature is : \033[1;32m" <<temp << flush << "°C \033[0m";
-		cout<<"\r";
 		if (Fan_is_open)
 		{
 			if (temp < 39.0)
@@ -36,7 +35,7 @@ int main()
 				sleep(10);
 				softPwmWrite(_FANPIN, 0);
 			}
-			sleep(10);
+			sleep(5);
 		}
 		else
 		{	
@@ -44,34 +43,35 @@ int main()
 			{
 				Fan_is_open = true;
 				softPwmWrite(_FANPIN, 60);
-				cout << "set fan speed 60"<<flush;
+				//cout << "set fan speed 60"<<flush;
 			}
 			if (temp >=41 && temp < 42)
 			{
 				Fan_is_open = true;
 				softPwmWrite(_FANPIN, 70);
-				cout << "set fan speed 70"<<flush;
+				//cout << "set fan speed 70"<<flush;
 			}
 			if (temp >=42 && temp < 43)
 			{
 				Fan_is_open = true;
 				softPwmWrite(_FANPIN, 80);
-				cout << "set fan speed 80"<<flush;
+				//cout << "set fan speed 80"<<flush;
 			}
 			if (temp >=44 && temp < 45)
 			{
 				Fan_is_open = true;
 				softPwmWrite(_FANPIN, 90);
-				cout << "set fan speed 90"<<flush;
+				//cout << "set fan speed 90"<<flush;
 			}
 			if (temp > 45.0)
 			{
 				Fan_is_open = true;
 				softPwmWrite(_FANPIN, 100);
-				cout << "set fan speed 100"<<flush;
+				//cout << "set fan speed 100"<<flush;
 				sleep(60);
 			}
 		}
+		cout<<"\r";
 	}
 	return 0;
 }
