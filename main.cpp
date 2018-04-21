@@ -1,8 +1,28 @@
+/******************************************************************************
+
+
+-------------------------------------------------------------------------------
+        Project Name : AutoControlRaspberryfan                                 
+        Author       : BDZNH                                                   
+        Project URL  : https://github.com/BDZNH/AutoControlRaspberryFan        
+        what is this : Auto control raspberry fan with 5V. Turn the fan        
+                       when the temperaure is high than 45째C, turn off         
+                       fan when the CPU temperature is lower than 39째C.        
+-------------------------------------------------------------------------------
+
+
+
+******************************************************************************/
+
+
+
+
 #include <iostream>
 #include <fstream>
 #include <unistd.h>
 #include <wiringPi.h>
 #include <softPwm.h>
+#include <ctime>
 #define TEMP_PATH "/sys/class/thermal/thermal_zone0/temp"
 #define LOG_PATH "/tmp/RaspberrypiFanSpeed.log"
 #define _FANPIN 8
@@ -18,15 +38,18 @@ int main()
 	ofstream log(LOG_PATH, ios::out);
 	if (!log.is_open())
 	{
-		cout << "Cant open file :" << LOG_PATH << endl;
+		cout << "Can't open file : " << LOG_PATH << endl;
 	}
 	ifstream fin(TEMP_PATH, ios_base::in);
 	if (!fin.is_open())
 	{
-		cout << "Cant open file: " << TEMP_PATH << endl;
+		cout << "Can't open file : " << TEMP_PATH << endl;
 		return -1;
 	}
+	time_t time_cur;
+	time(&time_cur);
 	double temp = 0;
+	int Fan_Speed = 0;
 	bool Forty_five_Flag = false;
 	if (initWiringPi() < 0)
 	{
@@ -36,70 +59,76 @@ int main()
 	{
 		GetCpuTempera(fin,temp);
 		if (temp >= 42)
-			cout << "Cpu temperature is : \033[0;31m" << temp << "▲C \033[0m";
+			cout << "Cpu temperature is : \033[0;31m" << temp << "째C   \033[0m";
 		else
-			cout << "Cpu temperature is : \033[1;32m" << temp << "▲C \033[0m";
+			cout << "Cpu temperature is : \033[1;32m" << temp << "째C   \033[0m";
 		if (Forty_five_Flag)
 		{
 			if (temp < 39.0)
 			{
 				Forty_five_Flag = false;
-				delay(1000);
-				softPwmWrite(_FANPIN, 0);
+				sleep(1);
+				Fan_Speed = 0;
+				softPwmWrite(_FANPIN, Fan_Speed);
+				time(&time_cur);
+				log << ctime(&time_cur) << "  set fan speed to " << Fan_Speed << endl;
 			}
 			else
 			{
-				delay(1000);
+				time(&time_cur);
+				log << ctime(&time_cur) << "  set fan speed to " << Fan_Speed << endl;
+				sleep(1);
 			}
 		}
 		else
 		{
 			if (temp < 39.0)
 			{
-				delay(1000);
-				softPwmWrite(_FANPIN, 0);
+				sleep(1);
+				Fan_Speed = 0;
+				softPwmWrite(_FANPIN, Fan_Speed);
+				time(&time_cur);
+				log << ctime(&time_cur) << "  set fan speed to " << Fan_Speed <<endl;
 			}
 			if (temp >40.0 && temp < 41.0)
 			{
-				softPwmWrite(_FANPIN, 60);
-				//log << "  set fan speed 60"<<endl;
+				Fan_Speed = 60;
+				softPwmWrite(_FANPIN, Fan_Speed);
+				time(&time_cur);
+				log << ctime(&time_cur) << "  set fan speed to " << Fan_Speed <<endl;
 			}
 			else if (temp >= 41.0 && temp < 42.0)
 			{
-				softPwmWrite(_FANPIN, 70);
-				//log << "  set fan speed 70"<<endl;
-				//cout << "speed 70" <<flush;
-				//log.clear();
-				//log.seekg(0, ios::beg);
+				Fan_Speed = 70;
+				softPwmWrite(_FANPIN, Fan_Speed);
+				time(&time_cur);
+				log << ctime(&time_cur) << "  set fan speed to " << Fan_Speed <<endl;
 			}
 			else if (temp >= 42.0 && temp < 43.0)
 			{
-				softPwmWrite(_FANPIN, 80);
-				//log << "  set fan speed 80"<<endl;
-				//cout << " speed 80 " <<flush;
-				//log.clear();
-				//log.seekg(0, ios::beg);
+				Fan_Speed = 80;
+				softPwmWrite(_FANPIN, Fan_Speed);
+				time(&time_cur);
+				log << ctime(&time_cur) << "  set fan speed to " << Fan_Speed <<endl;
 			}
 			else if (temp >= 43.0 && temp < 45.0)
 			{
-				softPwmWrite(_FANPIN, 90);
-				//log << "  set fan speed 90"<<endl;
-				//cout << "Speed 90" <<flush;
-				//log.clear();
-				//log.seekg(0, ios::beg);
+				Fan_Speed = 90;
+				softPwmWrite(_FANPIN, Fan_Speed);
+				time(&time_cur);
+				log << ctime(&time_cur) << "  set fan speed to " << Fan_Speed <<endl;
 			}
 			else if (temp > 45.0)
 			{
-				softPwmWrite(_FANPIN, 100);
-				//log << "  set fan speed 100"<<endl;
-				//cout << "Speed 100" <<flush;
+				Fan_Speed = 100;
+				softPwmWrite(_FANPIN, Fan_Speed);
 				Forty_five_Flag = true;
-				//log.clear();
-				//log.seekg(0, ios::beg);
-				delay(5000);
+				time(&time_cur);
+				log << ctime(&time_cur) << "  set fan speed to "<< Fan_Speed <<endl;
+				sleep(5);
 			}
 		}
-		delay(2000);
+		sleep(2);
 		cout << flush << "\r";
 	}
 	return 0;
@@ -108,7 +137,7 @@ int main()
 void GetCpuTempera(ifstream &fin, double &temp)
 {
 	fin >> temp;
-	temp = temp / 1000.0;
+	temp = temp / 1.0;
 	fin.clear();
 	fin.seekg(0, ios::beg);
 }
@@ -122,22 +151,23 @@ int initWiringPi()
 	}
 	if (softPwmCreate(_FANPIN, 0, 100) != 0)
 	{
-		cout << "WiringPi setup failed" << flush << " \r";
+		cout << "softPwmcreat setup failed" << flush << " \r";
 		return -2;
 	}
 	return 0;
 }
 
 
+
 void showInfo()
 {
 	cout << "-------------------------------------------------------------------------------" << endl;
-	cout << "        Project Name : AutoControlRaspberryfan" << endl;
-	cout << "        Author       : BDZNH" << endl;
-	cout << "        Project URL  : https://github.com/BDZNH/AutoControlRaspberryFan" << endl;
-	cout << "        what is this : Auto control raspberry fan with 5V. Turn the fan" << endl;
-	cout << "                       when the temperaure is high than 45▲C, turn off " << endl;
-	cout << "                       fan when the CPU temperature is lower than 40▲C." << endl;
+	cout << "        Project Name : AutoControlRaspberryfan                                 " << endl;
+	cout << "        Author       : BDZNH                                                   " << endl;
+	cout << "        Project URL  : https://github.com/BDZNH/AutoControlRaspberryFan        " << endl;
+	cout << "        what is this : Auto control raspberry fan with 5V. Turn the fan        " << endl;
+	cout << "                       when the temperaure is high than 45째C, turn off         " << endl;
+	cout << "                       fan when the CPU temperature is lower than 39째C.        " << endl;
 	cout << "-------------------------------------------------------------------------------" << endl;
 	cout << "\n\n\n" << endl;
 }
