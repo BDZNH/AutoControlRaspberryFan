@@ -4,40 +4,46 @@
 #include <wiringPi.h>
 #include <softPwm.h>
 #define TEMP_PATH "/sys/class/thermal/thermal_zone0/temp"
-#define LOG_PATH "/tmp/fanspped.log"
+#define LOG_PATH "/tmp/RaspberrypiFanSpeed.log"
 #define _FANPIN 8
 using namespace std;
 
-double GetCpuTempera();
+void GetCpuTempera(ifstream &fin,double &temp);
 int initWiringPi();
 void showInfo();
 
 int main()
 {
 	showInfo();
-	ofstream log(LOG_PATH,ios::out | ios::app);
-	if(!log.is_open())
+	ofstream log(LOG_PATH, ios::out);
+	if (!log.is_open())
 	{
-		cout<<"Cant open file :"<<LOG_PATH<<endl;
+		cout << "Cant open file :" << LOG_PATH << endl;
+	}
+	ifstream fin(TEMP_PATH, ios_base::in);
+	if (!fin.is_open())
+	{
+		cout << "Cant open file: " << TEMP_PATH << endl;
+		return -1;
 	}
 	double temp = 0;
-	bool Fifty_Flag = false;
+	bool Forty_five_Flag = false;
 	if (initWiringPi() < 0)
 	{
 		return -1;
 	}
 	while (true)
 	{
-		temp = GetCpuTempera();
-		if (temp >= 42 )
-			cout << "Cpu temperature is : \033[0;31m" <<temp <<"°C \033[0m";
+		GetCpuTempera(fin,temp);
+		if (temp >= 42)
+			cout << "Cpu temperature is : \033[0;31m" << temp << "¡ãC \033[0m";
 		else
-			cout << "Cpu temperature is : \033[1;32m" <<temp <<"°C \033[0m";
-		if (Fifty_Flag)
+			cout << "Cpu temperature is : \033[1;32m" << temp << "¡ãC \033[0m";
+		if (Forty_five_Flag)
 		{
 			if (temp < 39.0)
 			{
-				Fifty_Flag = false;
+				Forty_five_Flag = false;
 				delay(1000);
 				softPwmWrite(_FANPIN, 0);
 			}
@@ -47,7 +53,7 @@ int main()
 			}
 		}
 		else
-		{				
+		{
 			if (temp < 39.0)
 			{
 				delay(1000);
@@ -58,7 +64,7 @@ int main()
 				softPwmWrite(_FANPIN, 60);
 				//log << "  set fan speed 60"<<endl;
 			}
-			else if (temp >=41.0 && temp < 42.0)
+			else if (temp >= 41.0 && temp < 42.0)
 			{
 				softPwmWrite(_FANPIN, 70);
 				//log << "  set fan speed 70"<<endl;
@@ -66,7 +72,7 @@ int main()
 				//log.clear();
 				//log.seekg(0, ios::beg);
 			}
-			else if (temp >=42.0 && temp < 43.0)
+			else if (temp >= 42.0 && temp < 43.0)
 			{
 				softPwmWrite(_FANPIN, 80);
 				//log << "  set fan speed 80"<<endl;
@@ -74,7 +80,7 @@ int main()
 				//log.clear();
 				//log.seekg(0, ios::beg);
 			}
-			else if (temp >=43.0 && temp < 45.0)
+			else if (temp >= 43.0 && temp < 45.0)
 			{
 				softPwmWrite(_FANPIN, 90);
 				//log << "  set fan speed 90"<<endl;
@@ -87,32 +93,24 @@ int main()
 				softPwmWrite(_FANPIN, 100);
 				//log << "  set fan speed 100"<<endl;
 				//cout << "Speed 100" <<flush;
-				Fifty_Flag = true ;
+				Forty_five_Flag = true;
 				//log.clear();
 				//log.seekg(0, ios::beg);
 				delay(5000);
 			}
 		}
 		delay(2000);
-		cout<<flush<<"\r";
+		cout << flush << "\r";
 	}
 	return 0;
 }
 
-double GetCpuTempera()
+void GetCpuTempera(ifstream &fin, double &temp)
 {
-	ifstream fin(TEMP_PATH, ios_base::in);
-	if (!fin.is_open())
-	{
-		cout << "Cant open file: " << TEMP_PATH << endl;
-		return -1;
-	}
-	int temp;
 	fin >> temp;
-	double tem = temp / 1000.0;
+	temp = temp / 1000.0;
 	fin.clear();
 	fin.seekg(0, ios::beg);
-	return tem;
 }
 
 int initWiringPi()
@@ -138,8 +136,8 @@ void showInfo()
 	cout << "        Author       : BDZNH" << endl;
 	cout << "        Project URL  : https://github.com/BDZNH/AutoControlRaspberryFan" << endl;
 	cout << "        what is this : Auto control raspberry fan with 5V. Turn the fan" << endl;
-	cout << "                       when the temperaure is high than 45°C, turn off " << endl;
-	cout << "                       fan when the CPU temperature is lower than 40°C." << endl;
+	cout << "                       when the temperaure is high than 45¡ãC, turn off " << endl;
+	cout << "                       fan when the CPU temperature is lower than 40¡ãC." << endl;
 	cout << "-------------------------------------------------------------------------------" << endl;
 	cout << "\n\n\n" << endl;
 }
