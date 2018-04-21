@@ -87,30 +87,6 @@ int main()
 				softPwmWrite(_FANPIN, Fan_Speed);
 				SaveLog(log, temp, Fan_Speed, time_cur);
 			}
-			/*if (temp >40.0 && temp < 41.0)
-			{
-				Fan_Speed = 60;
-				softPwmWrite(_FANPIN, Fan_Speed);
-				SaveLog(log, temp, Fan_Speed, time_cur);
-			}
-			else if (temp >= 41.0 && temp < 42.0)
-			{
-				Fan_Speed = 70;
-				softPwmWrite(_FANPIN, Fan_Speed);
-				SaveLog(log, temp, Fan_Speed, time_cur);
-			}
-			else if (temp >= 42.0 && temp < 43.0)
-			{
-				Fan_Speed = 80;
-				softPwmWrite(_FANPIN, Fan_Speed);
-				SaveLog(log, temp, Fan_Speed, time_cur);
-			}
-			else if (temp >= 43.0 && temp < 45.0)
-			{
-				Fan_Speed = 90;
-				softPwmWrite(_FANPIN, Fan_Speed);
-				SaveLog(log, temp, Fan_Speed, time_cur);
-			}*/
 			else if (temp >= 40.0 && temp <= 45.0)
 			{
 				Fan_Speed = (((int)temp - 40) * 10) + 50;
