@@ -87,7 +87,7 @@ int main()
 				softPwmWrite(_FANPIN, Fan_Speed);
 				SaveLog(log, temp, Fan_Speed, time_cur);
 			}
-			if (temp >40.0 && temp < 41.0)
+			/*if (temp >40.0 && temp < 41.0)
 			{
 				Fan_Speed = 60;
 				softPwmWrite(_FANPIN, Fan_Speed);
@@ -110,6 +110,13 @@ int main()
 				Fan_Speed = 90;
 				softPwmWrite(_FANPIN, Fan_Speed);
 				SaveLog(log, temp, Fan_Speed, time_cur);
+			}*/
+			else if (temp >= 40.0 && temp <= 45.0)
+			{
+				Fan_Speed = (((int)temp - 40) * 10) + 50;
+				softPwmWrite(_FANPIN, Fan_Speed);
+				SaveLog(log, temp, Fan_Speed, time_cur);
+				sleep(2);
 			}
 			else if (temp > 45.0)
 			{
@@ -120,7 +127,7 @@ int main()
 				sleep(5);
 			}
 		}
-		sleep(3);
+		sleep(1);
 		cout << flush << "\r";
 	}
 	return 0;
