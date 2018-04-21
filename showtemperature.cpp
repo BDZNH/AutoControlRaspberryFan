@@ -1,7 +1,6 @@
 #include<iostream>
 #include<fstream>
 #include<unistd.h>
-#include"test.h"
 #define TEMP_PATH "/sys/class/thermal/thermal_zone0/temp"
 //#define SPEED_PATH "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_cur_freq"
 #define MOVEX(x) printf("\033[%dA",x);

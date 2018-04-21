@@ -18,7 +18,7 @@ case "$1" in
         ;;
     stop)
         echo "Stopping Fancontroler"
-        kill $(ps aux | grep -m 1 'autocontrolfan' | awk '{ print $2 }')
+        kill $(ps aux | grep -m 1 'sudo autocontrolfan' | awk '{ print $2 }')
         ;;
     *)
         echo "Usage: service fancontroler start|stop"

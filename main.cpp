@@ -31,15 +31,17 @@ using namespace std;
 void GetCpuTempera(ifstream &fin,double &temp);
 int initWiringPi();
 void showInfo();
+void SaveLog(ofstream &log, double &temp, int FanSpeed, time_t &time_cur);
 
 int main()
 {
 	showInfo();
-	ofstream log(LOG_PATH, ios::out);
+	ofstream log(LOG_PATH);
 	if (!log.is_open())
 	{
 		cout << "Can't open file : " << LOG_PATH << endl;
 	}
+	log.close();
 	ifstream fin(TEMP_PATH, ios_base::in);
 	if (!fin.is_open())
 	{
@@ -47,7 +49,6 @@ int main()
 		return -1;
 	}
 	time_t time_cur;
-	time(&time_cur);
 	double temp = 0;
 	int Fan_Speed = 0;
 	bool Forty_five_Flag = false;
@@ -67,18 +68,15 @@ int main()
 			if (temp < 39.0)
 			{
 				Forty_five_Flag = false;
-				sleep(1);
 				Fan_Speed = 0;
 				softPwmWrite(_FANPIN, Fan_Speed);
-				time(&time_cur);
-				log << ctime(&time_cur) << "  set fan speed to " << Fan_Speed << endl;
+				SaveLog(log, temp, Fan_Speed, time_cur);
 			}
 			else
 			{
-				time(&time_cur);
-				log << ctime(&time_cur) << "  set fan speed to " << Fan_Speed << endl;
-				sleep(1);
+				SaveLog(log, temp, Fan_Speed, time_cur);
 			}
+			sleep(1);
 		}
 		else
 		{
@@ -87,48 +85,42 @@ int main()
 				sleep(1);
 				Fan_Speed = 0;
 				softPwmWrite(_FANPIN, Fan_Speed);
-				time(&time_cur);
-				log << ctime(&time_cur) << "  set fan speed to " << Fan_Speed <<endl;
+				SaveLog(log, temp, Fan_Speed, time_cur);
 			}
 			if (temp >40.0 && temp < 41.0)
 			{
 				Fan_Speed = 60;
 				softPwmWrite(_FANPIN, Fan_Speed);
-				time(&time_cur);
-				log << ctime(&time_cur) << "  set fan speed to " << Fan_Speed <<endl;
+				SaveLog(log, temp, Fan_Speed, time_cur);
 			}
 			else if (temp >= 41.0 && temp < 42.0)
 			{
 				Fan_Speed = 70;
 				softPwmWrite(_FANPIN, Fan_Speed);
-				time(&time_cur);
-				log << ctime(&time_cur) << "  set fan speed to " << Fan_Speed <<endl;
+				SaveLog(log, temp, Fan_Speed, time_cur);
 			}
 			else if (temp >= 42.0 && temp < 43.0)
 			{
 				Fan_Speed = 80;
 				softPwmWrite(_FANPIN, Fan_Speed);
-				time(&time_cur);
-				log << ctime(&time_cur) << "  set fan speed to " << Fan_Speed <<endl;
+				SaveLog(log, temp, Fan_Speed, time_cur);
 			}
 			else if (temp >= 43.0 && temp < 45.0)
 			{
 				Fan_Speed = 90;
 				softPwmWrite(_FANPIN, Fan_Speed);
-				time(&time_cur);
-				log << ctime(&time_cur) << "  set fan speed to " << Fan_Speed <<endl;
+				SaveLog(log, temp, Fan_Speed, time_cur);
 			}
 			else if (temp > 45.0)
 			{
 				Fan_Speed = 100;
 				softPwmWrite(_FANPIN, Fan_Speed);
 				Forty_five_Flag = true;
-				time(&time_cur);
-				log << ctime(&time_cur) << "  set fan speed to "<< Fan_Speed <<endl;
+				SaveLog(log, temp, Fan_Speed, time_cur);
 				sleep(5);
 			}
 		}
-		sleep(2);
+		sleep(3);
 		cout << flush << "\r";
 	}
 	return 0;
@@ -137,7 +129,7 @@ int main()
 void GetCpuTempera(ifstream &fin, double &temp)
 {
 	fin >> temp;
-	temp = temp / 1.0;
+	temp = temp / 1000.0;
 	fin.clear();
 	fin.seekg(0, ios::beg);
 }
@@ -170,4 +162,17 @@ void showInfo()
 	cout << "                       fan when the CPU temperature is lower than 39°C.        " << endl;
 	cout << "-------------------------------------------------------------------------------" << endl;
 	cout << "\n\n\n" << endl;
+}
+
+void SaveLog(ofstream &log, double &temp, int Fan_Speed, time_t &time_cur)
+{
+	log.open(LOG_PATH,ios_base::out);
+	if (!log.is_open())
+	{
+		cout << "Can't open file : " << LOG_PATH << endl;
+	}
+	time(&time_cur);
+	log << ctime(&time_cur) << "CPU temperature is : " << temp << "°C \nSet fan speed to " << Fan_Speed << endl;
+	log.close();
+	log.clear();
 }

@@ -4,14 +4,16 @@
 AutoStart_Script=AutoControlFan
 all: autocontrolfan showtemperature
 
-showtemperature : showtemperature.o 
-	g++ $(CCFLAG) -o showtemperature.out showtemperature.o
-showtemperature.o : showtemperature.cpp
-	g++ -Wall -fexceptions -O2 -std=c++11 -lpthread -DNDEBUG -c showtemperature.cpp
 autocontrolfan : main.o
 	g++ -o autocontrolfan.out main.o -lwiringPi -lpthread $(HEADER_PATH)
 main.o : main.cpp
 	g++ -Wall -fexceptions -O2 -std=c++11 -lwiringPi -lpthread -DNDEBUG -c main.cpp  $(HEADER_PATH)
+showtemperature : showtemperature.o 
+	g++ -o showtemperature.out showtemperature.o
+showtemperature.o : showtemperature.cpp
+	g++ -Wall -fexceptions -O2 -std=c++11 -lpthread -DNDEBUG -c showtemperature.cpp
+
+
 clean :
 	rm -f *.o
 	rm *.out
