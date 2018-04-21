@@ -7,19 +7,19 @@ all: autocontrolfan showtemperature
 showtemperature : showtemperature.o 
 	g++ $(CCFLAG) -o showtemperature.out showtemperature.o
 showtemperature.o : showtemperature.cpp
-	g++ -Wall -fexceptions -g -std=c++11 -lpthread -DNDEBUG -c showtemperature.cpp
+	g++ -Wall -fexceptions -O2 -std=c++11 -lpthread -DNDEBUG -c showtemperature.cpp
 autocontrolfan : main.o
 	g++ -o autocontrolfan.out main.o -lwiringPi -lpthread $(HEADER_PATH)
 main.o : main.cpp
-	g++ -Wall -fexceptions -g -std=c++11 -lwiringPi -lpthread -DNDEBUG -c main.cpp  $(HEADER_PATH)
+	g++ -Wall -fexceptions -O2 -std=c++11 -lwiringPi -lpthread -DNDEBUG -c main.cpp  $(HEADER_PATH)
 clean :
 	rm -f *.o
 	rm *.out
 install :
 	service ${AutoStart_Script} stop
-	cp autocontrolfan.out /usr/bin/autocontrolfan 
-	cp showtemperature.out /usr/bin/showptp
-	cp AutoControlFan /etc/init.d/
+	rsync autocontrolfan.out /usr/bin/autocontrolfan 
+	rsync showtemperature.out /usr/bin/showptp
+	rsync AutoControlFan /etc/init.d/
 	chmod +x /etc/init.d/${AutoStart_Script}
 	update-rc.d ${AutoStart_Script} defaults
 	service ${AutoStart_Script} start
