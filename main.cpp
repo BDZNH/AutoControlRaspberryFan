@@ -25,7 +25,9 @@
 #include <ctime>
 #define TEMP_PATH "/sys/class/thermal/thermal_zone0/temp"
 #define LOG_PATH "/tmp/RaspberrypiFanSpeed.log"
+#define PID_PATH "/var/run/autocontrolfan.pid"
 #define _FANPIN 8
+#define min(x,y) (x<=y?x:y)
 using namespace std;
 
 void GetCpuTempera(ifstream &fin,double &temp);
@@ -48,6 +50,14 @@ int main()
 		cout << "Can't open file : " << TEMP_PATH << endl;
 		return -1;
 	}
+	ofstream pid(PID_PATH);
+	if (!pid.is_open())
+	{
+		cout << "Can't open file : " << PID_PATH << endl;
+	}
+	pid << getpid() << endl;
+	pid.close();
+	pid.clear();
 	time_t time_cur;
 	double temp = 0;
 	int Fan_Speed = 0;
@@ -56,13 +66,14 @@ int main()
 	{
 		return -1;
 	}
+
 	while (true)
 	{
 		GetCpuTempera(fin,temp);
 		if (temp >= 42)
-			cout << "Cpu temperature is : \033[0;31m" << temp << "°C   \033[0m";
+			cout << "Cpu temperature is : \033[0;31m" << temp << "°C   \033[0m" << flush;
 		else
-			cout << "Cpu temperature is : \033[1;32m" << temp << "°C   \033[0m";
+			cout << "Cpu temperature is : \033[1;32m" << temp << "°C   \033[0m" << flush;
 		if (Forty_five_Flag)
 		{
 			if (temp < 39.0)
@@ -89,7 +100,7 @@ int main()
 			}
 			else if (temp >= 40.0 && temp <= 45.0)
 			{
-				Fan_Speed = (((int)temp - 40) * 10) + 50;
+				Fan_Speed = min(((((int)temp - 40) * 10) + 60),100);
 				softPwmWrite(_FANPIN, Fan_Speed);
 				SaveLog(log, temp, Fan_Speed, time_cur);
 				sleep(2);
@@ -104,7 +115,7 @@ int main()
 			}
 		}
 		sleep(1);
-		cout << flush << "\r";
+		cout << "\r";
 	}
 	return 0;
 }

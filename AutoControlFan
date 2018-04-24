@@ -10,15 +10,20 @@
 # Short-Description: CPU fan control
 # Description: This service is used to control cpu fan.
 ### END INIT INFO
-  
+
+PID_FILE=/var/run/autocontrolfan.pid
+
 case "$1" in
     start)
         echo "Starting Fancontroler"
-        sudo autocontrolfan &
+        autocontrolfan &
+	read PID < $PID_FILE
         ;;
     stop)
         echo "Stopping Fancontroler"
-        kill $(ps aux | grep -m 1 'sudo autocontrolfan' | awk '{ print $2 }')
+        #kill $(ps aux | grep -m 1 'sudo autocontrolfan' | awk '{ print $2 }')
+	kill -9 $PID
+	rm -rf $PID_FILE
         ;;
     *)
         echo "Usage: service fancontroler start|stop"
