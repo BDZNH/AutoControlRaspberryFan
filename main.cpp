@@ -19,43 +19,51 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
 #include <unistd.h>
 #include <wiringPi.h>
 #include <softPwm.h>
 #include <ctime>
-#define TEMP_PATH "/sys/class/thermal/thermal_zone0/temp"
-#define LOG_PATH "/tmp/RaspberrypiFanSpeed.log"
-#define PID_PATH "/var/run/autocontrolfan.pid"
-#define _FANPIN 8
-#define min(x,y) (x<=y?x:y)
-using namespace std;
 
-void GetCpuTempera(ifstream &fin,double &temp);
+const unsigned int _FANPIN = 8;
+const std::string TEMP_PATH = "/sys/class/thermal/thermal_zone0/temp";
+const std::string LOG_PATH = "/tmp/RaspberrypiFanSpeed.log";
+const std::string PID_PATH = "/var/run/autocontrolfan.pid";
+
+
+inline int min(int x, int y)
+{
+	return x <= y ? x : y;
+}
+
+void GetCpuTempera(std::ifstream &fin,double &temp);
 int initWiringPi();
 void showInfo();
-void SaveLog(ofstream &log, double &temp, int FanSpeed, time_t &time_cur);
+void SaveLog(std::ofstream &log, double &temp, int FanSpeed, time_t &time_cur);
 
 int main()
 {
 	showInfo();
-	ofstream log(LOG_PATH);
+
+	
+	std::ofstream log(LOG_PATH.c_str());
 	if (!log.is_open())
 	{
-		cout << "Can't open file : " << LOG_PATH << endl;
+		std::cout << "Can't open file : " << LOG_PATH << std::endl;
 	}
 	log.close();
-	ifstream fin(TEMP_PATH, ios_base::in);
+	std::ifstream fin(TEMP_PATH.c_str(), std::ios_base::in);
 	if (!fin.is_open())
 	{
-		cout << "Can't open file : " << TEMP_PATH << endl;
+		std::cout << "Can't open file : " << TEMP_PATH << std::endl;
 		return -1;
 	}
-	ofstream pid(PID_PATH);
+	std::ofstream pid(PID_PATH.c_str());
 	if (!pid.is_open())
 	{
-		cout << "Can't open file : " << PID_PATH << endl;
+		std::cout << "Can't open file : " << PID_PATH << std::endl;
 	}
-	pid << getpid() << endl;
+	pid << getpid() << std::endl;
 	pid.close();
 	pid.clear();
 	time_t time_cur;
@@ -71,9 +79,9 @@ int main()
 	{
 		GetCpuTempera(fin,temp);
 		if (temp >= 42)
-			cout << "Cpu temperature is : \033[0;31m" << temp << "°C   \033[0m" << flush;
+			std::cout << "Cpu temperature is : \033[0;31m" << temp << "°C   \033[0m" << std::flush;
 		else
-			cout << "Cpu temperature is : \033[1;32m" << temp << "°C   \033[0m" << flush;
+			std::cout << "Cpu temperature is : \033[1;32m" << temp << "°C   \033[0m" << std::flush;
 		if (Forty_five_Flag)
 		{
 			if (temp < 39.0)
@@ -115,29 +123,29 @@ int main()
 			}
 		}
 		sleep(1);
-		cout << "\r";
+		std::cout << "\r";
 	}
 	return 0;
 }
 
-void GetCpuTempera(ifstream &fin, double &temp)
+void GetCpuTempera(std::ifstream &fin, double &temp)
 {
 	fin >> temp;
 	temp = temp / 1000.0;
 	fin.clear();
-	fin.seekg(0, ios::beg);
+	fin.seekg(0, std::ios::beg);
 }
 
 int initWiringPi()
 {
 	if (wiringPiSetup() != 0)
 	{
-		cout << "WiringPi setup failed" << flush << " \r";
+		std::cout << "WiringPi setup failed" << std::flush << " \r";
 		return -1;
 	}
 	if (softPwmCreate(_FANPIN, 0, 100) != 0)
 	{
-		cout << "softPwmcreat setup failed" << flush << " \r";
+		std::cout << "softPwmcreat setup failed" << std::flush << " \r";
 		return -2;
 	}
 	return 0;
@@ -147,26 +155,26 @@ int initWiringPi()
 
 void showInfo()
 {
-	cout << "-------------------------------------------------------------------------------" << endl;
-	cout << "        Project Name : AutoControlRaspberryfan                                 " << endl;
-	cout << "        Author       : BDZNH                                                   " << endl;
-	cout << "        Project URL  : https://github.com/BDZNH/AutoControlRaspberryFan        " << endl;
-	cout << "        what is this : Auto control raspberry fan with 5V. Turn the fan        " << endl;
-	cout << "                       when the temperaure is high than 45°C, turn off         " << endl;
-	cout << "                       fan when the CPU temperature is lower than 39°C.        " << endl;
-	cout << "-------------------------------------------------------------------------------" << endl;
-	cout << "\n\n\n" << endl;
+	std::cout << "-------------------------------------------------------------------------------" << std::endl;
+	std::cout << "        Project Name : AutoControlRaspberryfan                                 " << std::endl;
+	std::cout << "        Author       : BDZNH                                                   " << std::endl;
+	std::cout << "        Project URL  : https://github.com/BDZNH/AutoControlRaspberryFan        " << std::endl;
+	std::cout << "        what is this : Auto control raspberry fan with 5V. Turn the fan        " << std::endl;
+	std::cout << "                       when the temperaure is high than 45°C, turn off         " << std::endl;
+	std::cout << "                       fan when the CPU temperature is lower than 39°C.        " << std::endl;
+	std::cout << "-------------------------------------------------------------------------------" << std::endl;
+	std::cout << "\n\n\n" << std::endl;
 }
 
-void SaveLog(ofstream &log, double &temp, int Fan_Speed, time_t &time_cur)
+void SaveLog(std::ofstream &log, double &temp, int Fan_Speed, time_t &time_cur)
 {
-	log.open(LOG_PATH,ios_base::out);
+	log.open(LOG_PATH.c_str(), std::ios_base::out);
 	if (!log.is_open())
 	{
-		cout << "Can't open file : " << LOG_PATH << endl;
+		std::cout << "Can't open file : " << LOG_PATH << std::endl;
 	}
 	time(&time_cur);
-	log << ctime(&time_cur) << "CPU temperature is : " << temp << "°C \nSet fan speed to " << Fan_Speed << endl;
+	log << ctime(&time_cur) << "CPU temperature is : " << temp << "°C \nSet fan speed to " << Fan_Speed << std::endl;
 	log.close();
 	log.clear();
 }
