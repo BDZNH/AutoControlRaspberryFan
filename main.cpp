@@ -20,9 +20,10 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <unistd.h>
-#include <wiringPi.h>
-#include <softPwm.h>
+#include <unistd.h>   //For getpid(),sleep()
+#include <wiringPi.h> //wiringPiSetup(), 
+#include <softPwm.h>  //softPwmCreate(),softPwmWrite()
+#include <string.h>
 #include <ctime>
 
 const unsigned int _FANPIN = 8;
@@ -40,12 +41,21 @@ void GetCpuTempera(std::ifstream &fin,double &temp);
 int initWiringPi();
 void showInfo();
 void SaveLog(std::ofstream &log, double &temp, int FanSpeed, time_t &time_cur);
+void Check_Flags(unsigned int &argc, char *argv[], bool &quiet);
 
-int main()
+int main(int argc, char *argv[])
 {
-	showInfo();
-
 	
+	bool quiet = false;
+
+	for (int i = 0; i < argc; i++)
+	{
+		if (strcmp(argv[i], "-q")==0 || strcmp(argv[i], "q")==0)
+			quiet = true;
+	}
+	
+	if(!quiet)
+		showInfo();
 	std::ofstream log(LOG_PATH.c_str());
 	if (!log.is_open())
 	{
@@ -78,10 +88,13 @@ int main()
 	while (true)
 	{
 		GetCpuTempera(fin,temp);
-		if (temp >= 42)
-			std::cout << "Cpu temperature is : \033[0;31m" << temp << "°C   \033[0m" << std::flush;
-		else
-			std::cout << "Cpu temperature is : \033[1;32m" << temp << "°C   \033[0m" << std::flush;
+		if (!quiet)
+		{
+			if (temp >= 42)
+				std::cout << "Cpu temperature is : \033[0;31m" << temp << "°C   \033[0m" << std::flush;
+			else
+				std::cout << "Cpu temperature is : \033[1;32m" << temp << "°C   \033[0m" << std::flush;
+		}
 		if (Forty_five_Flag)
 		{
 			if (temp < 39.0)
@@ -151,7 +164,10 @@ int initWiringPi()
 	return 0;
 }
 
+void Check_Flags(unsigned int &argc, char *argv[], bool &quiet)
+{
 
+}
 
 void showInfo()
 {

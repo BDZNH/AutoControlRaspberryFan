@@ -12,22 +12,66 @@
 ### END INIT INFO
 
 PID_FILE=/var/run/autocontrolfan.pid
+LOG_FILE=/tmp/RaspberrypiFanSpeed.log
+
+check_running() {
+	if [ -r $PID_FILE ]; then
+		read PID < $PID_FILE
+		if [ -d "/proc/$PID" ]; then
+			return 0
+		else
+			rm -f $PID_FILE
+			return 1
+		fi
+	else
+		return 2
+	fi
+}
+do_status() {
+	check_running
+	case $? in
+	    0)
+	    echo "autocontrolfan (pid: $PID)is running..."
+	    ;;
+	    1|2)
+	    echo "autocontrolfan is stopped"
+	    RET_VAL=1
+	    ;;
+	esac
+}
+
+do_start() {
+	if check_running; then
+	    echo "autocontrolfan (pid: $PID)is running..."
+	    return 0
+	fi
+	autocontrolfan -q &
+	if check_running; then
+	    echo "start AutoControlFan success"
+	else
+	    echo "start AutoControlFan failed"
+	    RET_VAL=1
+	fi
+}
+
+do_stop() {
+	if check_running; then
+		kill $PID
+		rm -f $PID_FILE
+		echo "Stopping AutoControlFan success"
+	else
+		echo "AutoControlFan is stopped"
+		RET_VAL=1
+	fi
+}
 
 case "$1" in
-    start)
-        echo "Starting Fancontroler"
-        autocontrolfan &
-	read PID < $PID_FILE
-        ;;
-    stop)
-        echo "Stopping Fancontroler"
-        #kill $(ps aux | grep -m 1 'sudo autocontrolfan' | awk '{ print $2 }')
-	kill -9 $PID
-	rm -rf $PID_FILE
-        ;;
-    *)
-        echo "Usage: service fancontroler start|stop"
-        exit 1
-        ;;
+	start|stop|restart|status)
+	do_$1
+	;;
+	*)
+	echo "Usage $0 { start | stop | restart | status  }"
+	RET_VAL=1
+	;;
 esac
-exit 0
+exit $RET_VAL
